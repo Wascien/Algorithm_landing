@@ -22,11 +22,15 @@ import NavSide from '@/components/NavSide.vue'
 import HomeFooter from '@/components/HomeFooter.vue'
 const activities = [
     {
-        content:'搭建前端页面',
+        content:'提升NER精度，标签f1分数达到90%，部分达到95%',
+        timestamp:'2022-7-13'
+    },
+    {
+        content:'搭建前端页面，模型训练',
         timestamp:'2022-7-10'
     }
     ,{
-        content: '项目开始',
+        content: '项目开始,搭建NER模型',
         timestamp: '2022-07-06',
     },
     {

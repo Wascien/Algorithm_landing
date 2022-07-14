@@ -15,10 +15,20 @@
 
                         <div class="clear"></div>
                     </div>
-                    <div class="ans-space" v-html="processed_text">
-
+                    <div class="ans-space">
+                        <div class="ans-space-text" v-html="processed_text">
+                        </div>
+                        <ul class="tag-list">
+                            <li class="item" v-for="tag in Object.keys(tags)" :key="tag">
+                                <span class="item-dot" :style="styles[tag]" ></span>
+                                {{tag}}
+                            </li>
+                        </ul>
                     </div>
                     <div class="clear"></div>
+                </div>
+                <div class="information">
+                    数据集：人民日报2014 测试：<a href="http://www.people.com.cn/">here</a>
                 </div>
             </div>
             <home-footer></home-footer>
@@ -36,9 +46,10 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            text: '',
-            processed_text: '<span style="background-color:#E0FFFF;">新</span><span style="background-color:#E0FFFF;">华</span><span style="background-color:#E0FFFF;">社</span><span style="background-color:#FFE4C4;">印</span><span style="background-color:#FFE4C4;">度</span><span style="background-color:#FFE4C4;">尼</span><span style="background-color:#FFE4C4;">西</span><span style="background-color:#FFE4C4;">亚</span><span style="background-color:#FFE4C4;">巴</span><span style="background-color:#FFE4C4;">厘</span><span style="background-color:#FFE4C4;">岛</span><span style="background-color:#FFE4C4;">7</span><span style="background-color:#FFE4C4;">月</span><span style="background-color:#FFE4C4;">9</span><span style="background-color:#FFE4C4;">日</span>电（记者<span style="background-color:#F0FFF0;">余</span><span style="background-color:#F0FFF0;">谦</span><span style="background-color:#F0FFF0;">梁</span>）当地时间<span style="background-color:#E3E3E3;">2</span><span style="background-color:#E3E3E3;">0</span><span style="background-color:#E3E3E3;">2</span><span style="background-color:#E3E3E3;">2</span><span style="background-color:#E3E3E3;">年</span><span style="background-color:#E3E3E3;">7</span>月9日，国务委员<span style="background-color:#F0FFF0;">兼</span><span style="background-color:#F0FFF0;">外</span>长<span style="background-color:#FFE4C4;">王</span><span style="background-color:#FFE4C4;">毅</span><span style="background-color:#FFE4C4;">在</span>巴厘岛出席二十国集团外长<span style="background-color:#FFE4C4;">会</span><span style="background-color:#FFE4C4;">后</span>同美国<span style="background-color:#F0FFF0;">国</span><span style="background-color:#F0FFF0;">务</span><span style="background-color:#F0FFF0;">卿</span>布林肯举行会晤。双方就中美关系及共同关心的国际和地区问题进行了全面、深入、坦诚和长时间的沟通。双方都认为，此次对话是实质性的，也具有建设性，有助于增进彼此相互了解，减少误解误判，并<span style="background-color:#E3E3E3;">为</span><span style="background-color:#E3E3E3;">两</span>国未来高层交往积累了条件。'
-           
+            text: '新华社南宁7月13日电 （记者郭轶凡）中国—越南双边合作指导委员会第十四次会议13日在广西南宁举行，国务委员兼外长王毅和越南常务副总理范平明共同主持。',
+            processed_text: '<span style="background-color:#E0FFFF;">新</span><span style="background-color:#E0FFFF;">华</span><span style="background-color:#E0FFFF;">社</span><span style="background-color:#E0FFFF;">南</span><span style="background-color:#E0FFFF;">宁</span><span style="background-color:#E0FFFF;">7</span><span style="background-color:#E0FFFF;">月</span><span style="background-color:#E0FFFF;">13</span><span style="background-color:#E0FFFF;">日</span>电 （记者<span style="background-color:#F0FFF0;">郭</span><span style="background-color:#F0FFF0;">轶</span><span style="background-color:#F0FFF0;">凡</span>）<span style="background-color:#FFE4C4;">中</span><span style="background-color:#FFE4C4;">国</span>—<span style="background-color:#FFE4C4;">越</span><span style="background-color:#FFE4C4;">南</span>双边合作指导委员会第十四次会议<span style="background-color:#E3E3E3;">13</span><span style="background-color:#E3E3E3;">日</span>在<span style="background-color:#FFE4C4;">广</span><span style="background-color:#FFE4C4;">西</span><span style="background-color:#FFE4C4;">南</span><span style="background-color:#FFE4C4;">宁</span>举行，国务委员兼外长<span style="background-color:#F0FFF0;">王</span><span style="background-color:#F0FFF0;">毅</span>和<span style="background-color:#FFE4C4;">越</span><span style="background-color:#FFE4C4;">南</span>常务副总理<span style="background-color:#F0FFF0;">范</span><span style="background-color:#F0FFF0;">平</span><span style="background-color:#F0FFF0;">明</span>共同主持。',
+            tags: {"ORG": "#E0FFFF", "PER": "#F0FFF0", "LOC": "#FFE4C4", "T": "#E3E3E3"},
+            styles:{ORG: 'background-color:#E0FFFF;', PER: 'background-color:#F0FFF0;', LOC: 'background-color:#FFE4C4;', T: 'background-color:#E3E3E3;'}
         }
     },
     components: {
@@ -50,12 +61,18 @@ export default {
             this.text = '';
         },
         submit() {
-            let data={text:this.text}
-            axios.post('http://127.0.0.1:8000/NER/', data).then(response=>{
-                this.processed_text=response.data.parsed_text
+            let data = { text: this.text }
+            axios.post('http://127.0.0.1:8000/NER/', data).then(response => {
+                this.processed_text = response.data.parsed_text
+                console.log(this.processed_text)
+                this.tags=response.data.tags
+                this.styles={}
+                for(var tag in this.tags){
+                    this.styles[tag]=`background-color:${this.tags[tag]};`
+                }
             })
         }
-
+        
     }
 }
 </script>
@@ -117,13 +134,55 @@ div.clear {
     color: #222222;
 }
 
-.ans-space {
+.ans-space{
     width: 600px;
-    height: 300px;
     float: left;
-    background-color: white;
-    padding: 20px;
     color: #222222;
     font-size: 16px;
+}
+
+.ans-space-text {
+    padding: 20px;
+    width: 600px;
+    height: 300px;
+    background-color: white;
+}
+
+ul.tag-list {
+    padding: 20px;
+    width: 600px;
+    list-style: none;
+
+
+
+}
+li.item{
+    float: right;
+    height: 50px;
+    line-height: 50px;
+    margin-left: 10px;
+}
+span.item-dot{
+    float: left;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background-color: #222222;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+div.information{
+    margin-top:40px;
+    color: #222222;
+    font-size:16px;
+    text-align: center;
+}
+a{
+    color: #222222;
+    
+}
+a:hover{
+    color: blue;
 }
 </style>
